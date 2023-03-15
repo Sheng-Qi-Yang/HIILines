@@ -12,7 +12,6 @@ HIILines currently lacks models for dust absorption effects, so its application 
 `const.py`: Stores physical constants and constants for unit transfer.  
 `const_ion.py`: Stores radiative transfer constants.  
 `HIILines.py`: Define function 'assignL' for solving ISM line luminosities, and 'solV.py' for solving OIII and OII region volumes.  
-`SolveHII.ipynb`: Example script.  
-` tables`: Stores example stellar incident spectrum and OII, OIII region volume lookup tables.  
+`SolveHII.ipynb`: Example script.    
 
 Please contact Shengqi Yang (syang@carnegiescience.edu) for questions.
