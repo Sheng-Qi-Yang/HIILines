@@ -7,7 +7,7 @@ Comparing with other spectral synthesis code, the strength of HIILines is its hi
 * Galaxy line emission measurement design and forecasts (e.g. [Yang et al. 2021](https://academic.oup.com/mnras/article/504/1/723/6207947)).
 * Post process ISM line emission for galaxy simulations (e.g. Yang et al. 2023).  
 
-HIILines currently lacks models for dust absorption effects, so its application is limited to galaxies that are not very dusty.
+HIILines currently lacks models for dust absorption effects, so its application is limited to intrinsic line luminosity calculations.
 ## Scripts overview
 `const.py`: Stores physical constants and constants for unit transfer.  
 `const_ion.py`: Stores radiative transfer constants.  
