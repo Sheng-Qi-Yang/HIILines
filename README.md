@@ -5,7 +5,7 @@ Given the incident spectrum shape $L(\nu)$ and amplitude $Q_\mathrm{HI}$ (hydrog
 Comparing with other spectral synthesis code, the strength of HIILines is its high computational efficiency. It can be used for: 
 * Galaxy spectroscopic survey measurement interpolations assuming a one-zone picture (e.g. [Yang et al. 2020](https://academic.oup.com/mnras/article/499/3/3417/5913327)).
 * Galaxy line emission measurement design and forecasts (e.g. [Yang et al. 2021](https://academic.oup.com/mnras/article/504/1/723/6207947)).
-* Post-processing of hydrodynamical galaxy formation simulations for ISM emission lines (e.g. Yang et al. 2023).  
+* Post-processing of hydrodynamical galaxy formation simulations for ISM emission lines (e.g. [Yang et al. 2023](https://arxiv.org/abs/2304.09261)).  
 
 HIILines currently lacks models for dust absorption effects, so its application is limited to intrinsic line luminosity calculations.
 ## Scripts overview
