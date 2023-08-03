@@ -120,8 +120,12 @@ def solV(nu,L,logQ,lognH,logZ,T4,eps=0.1,returnProfiles=False):
     nu         = nu[idxValid]
     L          = L[idxValid]
     fspectrum  = interpolate.interp1d(nu,L)
-    intbar     = lambda nu: fspectrum(nu)/h/nu
-    QHI        = integrate.quad(intbar,13.6*eV2J/h ,nu[-1])[0] #Compute QHI for the incident spectrum
+    #intbar     = lambda nu: fspectrum(nu)/h/nu
+    #QHI        = integrate.quad(intbar,13.6*eV2J/h ,nu[-1])[0] #Compute QHI for the incident spectrum
+    nu_idx     = np.where(nu>13.6*eV2J/h)[0]
+    nu_sample  = np.append(13.6*eV2J/h,nu[nu_idx])
+    L_sample   = fspectrum(nu_sample)/h/nu_sample
+    QHI        = integrate.simpson(L_sample,nu_sample)
     L          = 10**(np.log10(L)+logQ-np.log10(QHI))          #Renormalize the incident spectrum such that its amplitude matches the input Q
 
     E          = nu*h/eV2J                           #eV
@@ -201,7 +205,7 @@ def solV(nu,L,logQ,lognH,logZ,T4,eps=0.1,returnProfiles=False):
     VOII2HII   = np.sum(4*np.pi*r_grid[1:]**2*(r_grid[1:]-r_grid[:-1])*nOII[1:]/nO)/V_HII
     VOIII2HII  = np.sum(4*np.pi*r_grid[1:]**2*(r_grid[1:]-r_grid[:-1])*nOIII[1:]/nO)/V_HII
     if returnProfiles == True:
-        return r_grid,nHI/nH,nHeI/nH,nOI/nO,nOII/nO,nOIII/nO,VOII2HII,VOIII2HII #Output HI,HeI,OI,OII,OIII fractional abundance radial profiles
+        return r_grid,nHI/nH,nHeI/nHe,nOI/nO,nOII/nO,nOIII/nO,VOII2HII,VOIII2HII #Output HI,HeI,OI,OII,OIII fractional abundance radial profiles
     if returnProfiles == False:
         return VOII2HII, VOIII2HII
 
