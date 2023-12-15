@@ -5,7 +5,7 @@ Given the incident spectrum shape $L(\nu)$ and amplitude $Q_\mathrm{HI}$ (hydrog
 Comparing with other spectral synthesis code, the strength of HIILines is its high computational efficiency. It can be used for: 
 * Galaxy spectroscopic survey measurement interpolations assuming a one-zone picture (e.g. [Yang et al. 2020](https://academic.oup.com/mnras/article/499/3/3417/5913327)).
 * Galaxy line emission measurement design and forecasts (e.g. [Yang et al. 2021](https://academic.oup.com/mnras/article/504/1/723/6207947)).
-* Post-processing of hydrodynamical galaxy formation simulations for ISM emission lines (e.g. [Yang et al. 2023](https://arxiv.org/abs/2304.09261)).  
+* Post-processing of hydrodynamical galaxy formation simulations for ISM emission lines (e.g. [Yang et al. 2023a](https://arxiv.org/abs/2304.09261)).  
 
 HIILines currently lacks models for dust absorption effects, so its application is limited to intrinsic line luminosity calculations.
 ## Scripts overview
@@ -13,5 +13,6 @@ HIILines currently lacks models for dust absorption effects, so its application 
 `const_ion.py`: Stores radiative transfer constants.  
 `HIILines.py`: Define function 'assignL' for solving ISM line luminosities, and 'solV.py' for solving OIII and OII region volumes.  
 `SolveHII.ipynb`: Example scripts. The first jupyter notebook cell shows an example where the user inputs stellar radiation spectrum shape, amplitude, gas density, metallicity, temperature, and HIILines outputs luminosities of various [OIII], [OII], and Balmer line luminosities. The second cell shows an example where the user uses a pre-tabulated $V_\mathrm{OIII}/V_\mathrm{HII}$ lookup table to skip the OIII region volume correction factor calculation, which will significantly speed up the subsequent steps for computing line luminosities..
-
+`strongLineDiagnostic.py`: functions for constraining HII region metallicities with {R2,O3O2}, {R3,O3O2}, or {R23,O3O2}. N2O2 is optional for breaking degeneracies among multiple metallcity solutions.
+`StrongLineDiagnostics.ipynb`: Example scripts for strong line diagnostic methods published in [Yang et al. 2023b](https://arxiv.org/abs/2312.09213)
 Please contact Shengqi Yang (syang@carnegiescience.edu) for questions.
