@@ -11,8 +11,38 @@ alphaB_Hbeta  = lambda T4:3.03*10**-14*T4**(-0.874-0.058*np.log(T4))            
 alpha1_HeI    = lambda T4:1.54*10**-13*T4**-0.486                                          #cm^3 s^-1 #Bruce Draine Eq 14.14
 alphaA_HeI    = lambda T4:alphaB_HeI(T4)+alpha1_HeI(T4)
 #Osterbrock Table A5.1
-alphaB_OIII   = 3.66*10**-12                                                               #cm^3 s^-1
-alphaB_OII    = 3.99*10**-13                                                               #cm^3 s^-1
+#alphaB_OIII   = 3.66*10**-12                                                               #cm^3 s^-1
+#alphaB_OII    = 3.99*10**-13                                                               #cm^3 s^-1
+#RR: Badnel2006 https://iopscience.iop.org/article/10.1086/508465
+#DR: Badnell,N.R.1986,J.Phys.B,19,3827. 2006a
+#RR and DR summarized in Aaron Smith COLT bitbucket
+#https://bitbucket.org/aaron_smith/colt/src/fb0cd32aeadaedce637a2df46780b1a71a1d3864/src/rates.h
+#########################Oxygen#########################################
+def alpha_RR_OIII(T4):
+    T   = T4*10000
+    ST0 = np.sqrt(T / 0.1602)
+    ST1 = np.sqrt(T / 4.377e6)
+    Bp  = 0.7668 + 0.107 * np.exp(-139200./T)
+    return 2.096e-9 / (ST0 * (1 + ST0)** (1-Bp) * (1 + ST1)**(1.+Bp))
+
+def alpha_RR_OII(T4):
+    T   = T4*10000
+    ST0 = np.sqrt(T / 4.136)
+    ST1 = np.sqrt(T / 4.214e6)
+    Bp  = 0.6109 + 0.4093 * np.exp(-87700./T)
+    return 6.622e-11 / (ST0 * (1 + ST0)**(1-Bp) * (1 + ST1)**(1+Bp))
+
+def alpha_DR_OIII(T4):
+    T   = T4*10000
+    return T**-1.5 * (1.627e-7 * np.exp(-45.35/T) + 1.262e-7 * np.exp(-284.7/T) + 6.663e-7 * np.exp(-4166./T) + 3.925e-6 * np.exp(-28770./T) + 0.002406 * np.exp(-195300./T) + 0.001146 * np.exp(-364600./T))
+
+def alpha_DR_OII(T4):
+    T   = T4*10000
+    return T**-1.5 * (5.629e-8 * np.exp(-5395./T) + 2.55e-7 * np.exp(-17700./T) + 0.0006173 * np.exp(-167100./T) + 0.0001627 * np.exp(-268700./T))
+
+alphaB_OIII = lambda T4: alpha_RR_OIII(T4) + alpha_DR_OIII(T4)
+alphaB_OII  = lambda T4: alpha_RR_OII(T4)  + alpha_DR_OII(T4)
+
 #Charge transfer rate coefficient, Osterbrock Table A5.4
 delta_OII     = 1.05*10**-9                                                                #cm^3 s^-1
 delta_OI      = 1.04*10**-9                                                                #cm^3 s^-1
@@ -94,6 +124,29 @@ def sigma_HeI(nu):
     x      = E[idx_valid]/E0-y0
     y      = np.sqrt(x**2+y1**2)
     
+    sigma[idx_valid] = sigma0*((x-1)**2+yw**2)*y**(0.5*P-5.5)*(1+np.sqrt(y/ya))**-P*10**-18 #cm^2
+    return sigma
+
+def sigma_HeII(nu):
+    sigma  = np.zeros(len(nu))
+
+    E               = h*nu*6.242*10**18
+    idx_null        = np.where((E<54.42)|(E>5*10**4))[0]
+    sigma[idx_null] = 0
+    idx_valid       = np.where((E>=54.42)&(E<=5*10**4))[0]
+
+
+    E0     = 1.72    #eV
+    sigma0 = 1.369e4 #Mb
+    ya     = 32.88
+    P      = 2.963
+    yw     = 0
+    y0     = 0
+    y1     = 0
+
+    x      = E[idx_valid]/E0-y0
+    y      = np.sqrt(x**2+y1**2)
+
     sigma[idx_valid] = sigma0*((x-1)**2+yw**2)*y**(0.5*P-5.5)*(1+np.sqrt(y/ya))**-P*10**-18 #cm^2
     return sigma
 
@@ -327,4 +380,166 @@ R40_OIII = lambda ne,T4: ne*k40_OIII(T4)+A40_OIII
 R41_OIII = lambda ne,T4: ne*k41_OIII(T4)+A41_OIII
 R42_OIII = lambda ne,T4: ne*k42_OIII(T4)+A42_OIII
 R43_OIII = lambda ne,T4: ne*k43_OIII(T4)+A43_OIII
+
+#NII
+#State degeneracy
+g0_NII  = 1
+g1_NII  = 3
+g2_NII  = 5
+g3_NII  = 5
+g4_NII  = 1
+#Spontaneous decay rate            #Cloudy
+A10_NII = 2.08*10**-6              #s^-1
+A20_NII = 1.12*10**-12             #s^-1
+A21_NII = 7.46*10**-6              #s^-1
+A30_NII = 5.25*10**-7              #s^-1
+A31_NII = 9.22*10**-7+9.84*10**-4  #s^-1
+A32_NII = 8.65*10**-6+2.91*10**-3  #s^-1
+A40_NII = 0                        #s^-1
+A41_NII = 3.18*10**-2              #s^-1
+A42_NII = 1.55*10**-4              #s^-1
+A43_NII = 1.14                     #s^-1
+#Level energy and frequency
+E10_NII  = 70*kb                   #J
+E20_NII  = 188*kb
+E30_NII  = 22037*kb
+E40_NII  = 47033*kb
+E21_NII  = E20_NII-E10_NII
+E31_NII  = E30_NII-E10_NII
+E32_NII  = E30_NII-E20_NII
+E41_NII  = E40_NII-E10_NII
+E42_NII  = E40_NII-E20_NII
+E43_NII  = E40_NII-E30_NII
+nu10_NII = E10_NII/h               #s^-1
+nu20_NII = E20_NII/h
+nu30_NII = E30_NII/h
+nu40_NII = E40_NII/h
+nu21_NII = E21_NII/h
+nu31_NII = E31_NII/h
+nu32_NII = E32_NII/h
+nu41_NII = E41_NII/h
+nu42_NII = E42_NII/h
+nu43_NII = E43_NII/h
+#Collisional (de-)excitation coefficients                           #Bruce Draine Table F2
+Omega10_NII = lambda T4:0.431*T4**(0.099+0.014*np.log(T4))
+k10_NII     = lambda T4:8.629*10**-8/np.sqrt(T4)*Omega10_NII(T4)/g1_NII #cm^3 s^-1
+k01_NII     = lambda T4:g1_NII/g0_NII*k10_NII(T4)*np.exp(-E10_NII/kb/T4/10000)
+Omega20_NII = lambda T4:0.273*T4**(0.166+0.030*np.log(T4))
+k20_NII     = lambda T4:8.629*10**-8/np.sqrt(T4)*Omega20_NII(T4)/g2_NII #cm^3 s^-1
+k02_NII     = lambda T4:g2_NII/g0_NII*k20_NII(T4)*np.exp(-E20_NII/kb/T4/10000)
+Omega21_NII = lambda T4:1.15*T4**(0.137+0.024*np.log(T4))
+k21_NII     = lambda T4:8.629*10**-8/np.sqrt(T4)*Omega21_NII(T4)/g2_NII #cm^3 s^-1
+k12_NII     = lambda T4:g2_NII/g1_NII*k21_NII(T4)*np.exp(-E21_NII/kb/T4/10000)
+Omega30_NII = lambda T4:0.303*T4**(0.053+0.009*np.log(T4))
+k30_NII     = lambda T4:8.629*10**-8/np.sqrt(T4)*Omega30_NII(T4)/g3_NII #cm^3 s^-1
+k03_NII     = lambda T4:g3_NII/g0_NII*k30_NII(T4)*np.exp(-E30_NII/kb/T4/10000)
+Omega31_NII = lambda T4:0.909*T4**(0.053+0.010*np.log(T4))
+k31_NII     = lambda T4:8.629*10**-8/np.sqrt(T4)*Omega31_NII(T4)/g3_NII #cm^3 s^-1
+k13_NII     = lambda T4:g3_NII/g1_NII*k31_NII(T4)*np.exp(-E31_NII/kb/T4/10000)
+Omega32_NII = lambda T4:1.51*T4**(0.054+0.011*np.log(T4))
+k32_NII     = lambda T4:8.629*10**-8/np.sqrt(T4)*Omega32_NII(T4)/g3_NII #cm^3 s^-1
+k23_NII     = lambda T4:g3_NII/g2_NII*k32_NII(T4)*np.exp(-E32_NII/kb/T4/10000)
+Omega40_NII = lambda T4:0.0352*T4**(0.066+0.018*np.log(T4))
+k40_NII     = lambda T4:8.629*10**-8/np.sqrt(T4)*Omega40_NII(T4)/g4_NII #cm^3 s^-1
+k04_NII     = lambda T4:g4_NII/g0_NII*k40_NII(T4)*np.exp(-E40_NII/kb/T4/10000)
+Omega41_NII = lambda T4:0.105*T4**(0.070+0.021*np.log(T4))
+k41_NII     = lambda T4:8.629*10**-8/np.sqrt(T4)*Omega41_NII(T4)/g4_NII #cm^3 s^-1
+k14_NII     = lambda T4:g4_NII/g1_NII*k41_NII(T4)*np.exp(-E41_NII/kb/T4/10000)
+Omega42_NII = lambda T4:0.176*T4**(0.065+0.017*np.log(T4))
+k42_NII     = lambda T4:8.629*10**-8/np.sqrt(T4)*Omega42_NII(T4)/g4_NII #cm^3 s^-1
+k24_NII     = lambda T4:g4_NII/g2_NII*k42_NII(T4)*np.exp(-E42_NII/kb/T4/10000)
+Omega43_NII = lambda T4:0.806*T4**(-0.175-0.014*np.log(T4))
+k43_NII     = lambda T4:8.629*10**-8/np.sqrt(T4)*Omega43_NII(T4)/g4_NII #cm^3 s^-1
+k34_NII     = lambda T4:g4_NII/g3_NII*k43_NII(T4)*np.exp(-E43_NII/kb/T4/10000)
+#Five level rates
+R01_NII = lambda ne,T4: ne*k01_NII(T4)
+R02_NII = lambda ne,T4: ne*k02_NII(T4)
+R03_NII = lambda ne,T4: ne*k03_NII(T4)
+R04_NII = lambda ne,T4: ne*k04_NII(T4)
+R10_NII = lambda ne,T4: ne*k10_NII(T4)+A10_NII
+R12_NII = lambda ne,T4: ne*k12_NII(T4)
+R13_NII = lambda ne,T4: ne*k13_NII(T4)
+R14_NII = lambda ne,T4: ne*k14_NII(T4)
+R20_NII = lambda ne,T4: ne*k20_NII(T4)+A20_NII
+R21_NII = lambda ne,T4: ne*k21_NII(T4)+A21_NII
+R23_NII = lambda ne,T4: ne*k23_NII(T4)
+R24_NII = lambda ne,T4: ne*k24_NII(T4)
+R30_NII = lambda ne,T4: ne*k30_NII(T4)+A30_NII
+R31_NII = lambda ne,T4: ne*k31_NII(T4)+A31_NII
+R32_NII = lambda ne,T4: ne*k32_NII(T4)+A32_NII
+R34_NII = lambda ne,T4: ne*k34_NII(T4)
+R40_NII = lambda ne,T4: ne*k40_NII(T4)+A40_NII
+R41_NII = lambda ne,T4: ne*k41_NII(T4)+A41_NII
+R42_NII = lambda ne,T4: ne*k42_NII(T4)+A42_NII
+R43_NII = lambda ne,T4: ne*k43_NII(T4)+A43_NII
+#Cross section
+def sigma_NI(nu):
+    #https://arxiv.org/abs/astro-ph/9601009v2
+    sigma           = np.zeros(len(nu))
+
+    E               = h*nu*6.242*10**18
+    idx_null        = np.where((E<14.53)|(E>404.8))[0]
+    sigma[idx_null] = 0
+    idx_valid       = np.where((E>=14.53)&(E<=404.8))[0]
+
+    E      = h*nu*6.242*10**18 #eV
+    E0     = 4.034             #eV
+    sigma0 = 8.235*100         #Mb
+    ya     = 8.033*10
+    P      = 3.928
+    yw     = 9.097*10**-2
+    y0     = 8.598*10**-1
+    y1     = 2.325
+
+    x      = E[idx_valid]/E0-y0
+    y      = np.sqrt(x**2+y1**2)
+
+    sigma[idx_valid] = sigma0*((x-1)**2+yw**2)*y**(0.5*P-5.5)*(1+np.sqrt(y/ya))**-P*10**-18 #cm^2
+    return sigma
+
+def sigma_NII(nu):
+    sigma           = np.zeros(len(nu))
+
+    E               = h*nu*6.242*10**18
+    idx_null        = np.where((E<29.6)|(E>423.6))[0]
+    sigma[idx_null] = 0
+    idx_valid       = np.where((E>=29.6)&(E<=423.6))[0]
+
+    E      = h*nu*6.242*10**18 #eV
+    E0     = 6.128*10**-2      #eV
+    sigma0 = 1.944             #Mb
+    ya     = 8.163*10**2
+    P      = 8.773
+    yw     = 1.043*10
+    y0     = 4.280*10**2
+    y1     = 2.030*10
+
+    x      = E[idx_valid]/E0-y0
+    y      = np.sqrt(x**2+y1**2)
+
+    sigma[idx_valid] = sigma0*((x-1)**2+yw**2)*y**(0.5*P-5.5)*(1+np.sqrt(y/ya))**-P*10**-18 #cm^2
+    return sigma
+
+def sigma_NIII(nu):
+    sigma           = np.zeros(len(nu))
+
+    E               = h*nu*6.242*10**18
+    idx_null        = np.where((E<47.45)|(E>447.3))[0]
+    sigma[idx_null] = 0
+    idx_valid       = np.where((E>=47.45)&(E<=447.3))[0]
+
+    E      = h*nu*6.242*10**18 #eV
+    E0     = 0.2420            #eV
+    sigma0 = 0.9375            #Mb
+    ya     = 278.8
+    P      = 9.156
+    yw     = 1.850
+    y0     = 187.7
+    y1     = 3.999
+
+    x      = E[idx_valid]/E0-y0
+    y      = np.sqrt(x**2+y1**2)
+
+    sigma[idx_valid] = sigma0*((x-1)**2+yw**2)*y**(0.5*P-5.5)*(1+np.sqrt(y/ya))**-P*10**-18 #cm^2
+    return sigma
 
