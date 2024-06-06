@@ -6,17 +6,18 @@ def MeasurelogZ(R_Obs,O3O2_Obs,Rmode,tag):
     logZQ        = np.linspace(-2,0,1000)
     ZQ           = 10**logZQ
     if tag == 'local':
-        T4OIII           = -0.32*logZQ**2-1.5*logZQ+0.41
-        T4OII            = -0.22*T4OIII**2+1.2*T4OIII+0.066
-        T4OII[T4OII<0.5] = 0.5
-    if tag == 'EoR':
-        T4OIII           = 0.81*logZQ**2+ 0.14*logZQ+ 1.1
-        T4OII            = -0.744+T4OIII*(2.338-0.610*T4OIII)
-        T4OII[T4OII<0.5] = 0.5
+        T4OIII           = -0.347*logZQ**2-1.61*logZQ+0.375
+        T4OII            = -0.219*T4OIII**2+1.19*T4OIII+0.0666
+        T4OII[np.where(T4OII<0.5)] = 0.5
     if tag == 'cosmicNoon':
-        T4OIII           = 0.88*logZQ**2+ 0.44*logZQ+ 1.2
-        T4OII            = -0.744+T4OIII*(2.338-0.610*T4OIII)
-        T4OII[T4OII<0.5] = 0.5 
+        T4OIII           = 0.914*logZQ**2+ 0.487*logZQ+ 1.27
+        T4OII            = -0.744+T4OIII*(2.338-0.610*T4OIII) #0.264+0.835*T4OIII
+        T4OII[np.where(T4OII<0.5)] = 0.5
+    if tag == 'EoR':
+        T4OIII           = 0.824*logZQ**2+ 0.101*logZQ+ 1.08
+        T4OII            = -0.744+T4OIII*(2.338-0.610*T4OIII) #0.264+0.835*T4OIII
+        T4OII[np.where(T4OII<0.5)] = 0.5
+    trial   = 0
     idx_sol = []
     while len(idx_sol)==0:
         fO3O2  = 1/(0.75*k03_OIII(T4OIII)*nu32_OIII/(k01_OII(T4OII)*nu10_OII+k02_OII(T4OII)*nu20_OII))
@@ -40,9 +41,14 @@ def MeasurelogZ(R_Obs,O3O2_Obs,Rmode,tag):
             diff      = R-R_Obs
             diff_prod = diff[1:]*diff[:-1]
             idx_sol   = np.where(diff_prod<=0)[0]
+        if trial == 1:
+            break
         if np.max(R)<R_Obs:
-            T4OIII       = T4OIII+0.1
-            T4OII        = T4OII+0.1
+            T4OIII       = T4OIII+0.2
+            T4OII        = T4OII+0.2
+            trial        = trial+1
+    if np.max(R)<R_Obs or np.min(R)>R_Obs:
+        return np.array([-10])
     w1 = (R[idx_sol+1]-R_Obs)/(R[idx_sol+1]-R[idx_sol])
     w2 = 1-w1
     return w1*logZQ[idx_sol]+w2*logZQ[idx_sol+1]
@@ -51,17 +57,18 @@ def MeasurelogZ_withN2O2(R_Obs,O3O2_Obs,N2O2,Rmode,tag):
     logZQ        = np.linspace(-2,0,1000)
     ZQ           = 10**logZQ
     if tag == 'local':
-        T4OIII           = -0.32*logZQ**2-1.5*logZQ+0.41
-        T4OII            = -0.22*T4OIII**2+1.2*T4OIII+0.066
-        T4OII[T4OII<0.5] = 0.5
-    if tag == 'EoR':
-        T4OIII           = 0.81*logZQ**2+ 0.14*logZQ+ 1.1
-        T4OII            = -0.744+T4OIII*(2.338-0.610*T4OIII)
-        T4OII[T4OII<0.5] = 0.5
+        T4OIII           = -0.347*logZQ**2-1.61*logZQ+0.375
+        T4OII            = -0.219*T4OIII**2+1.19*T4OIII+0.0666
+        T4OII[np.where(T4OII<0.5)] = 0.5
     if tag == 'cosmicNoon':
-        T4OIII           = 0.88*logZQ**2+ 0.44*logZQ+ 1.2
-        T4OII            = -0.744+T4OIII*(2.338-0.610*T4OIII)
-        T4OII[T4OII<0.5] = 0.5 
+        T4OIII           = 0.914*logZQ**2+ 0.487*logZQ+ 1.27
+        T4OII            = -0.744+T4OIII*(2.338-0.610*T4OIII) #0.264+0.835*T4OIII
+        T4OII[np.where(T4OII<0.5)] = 0.5
+    if tag == 'EoR':
+        T4OIII           = 0.824*logZQ**2+ 0.101*logZQ+ 1.08
+        T4OII            = -0.744+T4OIII*(2.338-0.610*T4OIII) #0.264+0.835*T4OIII
+        T4OII[np.where(T4OII<0.5)] = 0.5 
+    trial   = 0
     idx_sol = []
     while len(idx_sol)==0:
         fO3O2  = 1/(0.75*k03_OIII(T4OIII)*nu32_OIII/(k01_OII(T4OII)*nu10_OII+k02_OII(T4OII)*nu20_OII))
@@ -85,9 +92,12 @@ def MeasurelogZ_withN2O2(R_Obs,O3O2_Obs,N2O2,Rmode,tag):
             diff      = R-R_Obs
             diff_prod = diff[1:]*diff[:-1]
             idx_sol   = np.where(diff_prod<=0)[0]
+        if trial == 1:
+            break
         if np.max(R)<R_Obs:
-            T4OIII       = T4OIII+0.1
-            T4OII        = T4OII+0.1
+            T4OIII       = T4OIII+0.2
+            T4OII        = T4OII+0.2
+            trial        = trial+1
     w1 = (R[idx_sol+1]-R_Obs)/(R[idx_sol+1]-R[idx_sol])
     w2 = 1-w1
     
