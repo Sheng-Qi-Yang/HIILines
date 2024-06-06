@@ -16,4 +16,4 @@ HIILines currently lacks models for dust absorption effects, so its application 
 `strongLineDiagnostic.py`: functions for constraining HII region metallicities with {R2,O3O2}, {R3,O3O2}, or {R23,O3O2}. N2O2 is optional for breaking degeneracies among multiple metallcity solutions.   
 `StrongLineDiagnostics.ipynb`: Example scripts for strong line diagnostic methods published in [Yang et al. 2023b](https://arxiv.org/abs/2312.09213)  
 
-Please contact Shengqi Yang (syang@carnegiescience.edu) for questions.
+Please contact Shengqi Yang (shengqiy@lanl.gov) for questions.
