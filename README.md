@@ -1,5 +1,5 @@
 # HIILines
-HIILines is an analytical model for lines emitted by the ionized interstellar medium (ISM). It currently covers [OIII], [OII], $H_\alpha$, and $H_\beta$ lines. A detailed review of HIILines can be found in Yang et al. 2023.  
+HIILines is an analytical model for lines emitted by the ionized interstellar medium (ISM). It currently covers [OIII], [OII], $H_\alpha$, and $H_\beta$ lines. A detailed review of HIILines can be found in [Yang et al. 2023a](https://arxiv.org/abs/2304.09261).  
 ## Model overview
 Given the incident spectrum shape $L(\nu)$ and amplitude $Q_\mathrm{HI}$ (hydrogen ionizing photon generation rate $Q_\mathrm{HI}=\int_{13.6 \mathrm{eV}}^\infty\dfrac{L}{h\nu}d\nu$), together with characteristic HII region gas density $n_\mathrm{H}$, metallicity $Z$, and temperature $T$, HIILines assumes that the HII region is uniform and spherically symmetric. It first solves the HII, OIII, and OII region volumes assuming ionization-recombination balance among HI, HII, HeI, HeII, OI, OII, OIII. The OIII and OII level populations are then solved assuming all ions have achieved steady state. Finally, HIILines analytically calculates the [OIII], [OII], $H_\alpha$, and $H_\beta$ line luminosities.  
 Comparing with other spectral synthesis code, the strength of HIILines is its high computational efficiency. It can be used for: 
